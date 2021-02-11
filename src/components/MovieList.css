@@ -1,0 +1,11 @@
+.CenteredAlert {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px auto;
+}
+
+.NoMovieFound {
+  height: 50px;
+  width: 200px;
+}
