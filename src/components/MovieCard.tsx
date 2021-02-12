@@ -66,6 +66,7 @@ export const MovieCard: React.FC<Props> = ({ movie , handleRelatedSearch}) => {
         <IonCardContent>
           <IonItem>
             <IonTextarea
+              readonly
               value={movie.overview}
               rows={10}
               
