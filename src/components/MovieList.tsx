@@ -86,7 +86,7 @@ export const MovieList: React.FC<Props> = ({ searchText, relatedId, handleRelate
         </IonGrid>
       ) : (loading || reloading) ? (
         <IonSpinner className="CenteredAlert" name="circles" />
-      ) : searchText ? (
+      ) : (searchText || relatedId) ? (
         <IonCard className="NoMovieFound CenteredAlert">
           No movies found !
         </IonCard>
