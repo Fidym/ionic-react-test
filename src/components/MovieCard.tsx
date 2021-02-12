@@ -14,17 +14,22 @@ import {
   IonTitle,
   IonIcon,
   IonButtons,
+  IonChip,
+  IonNote,
+  IonTextarea,
 } from "@ionic/react";
 import React, { useState } from "react";
 import { IMovie } from "../interfaces/movie";
 import "./MovieCard.css";
 import { MovieDetail } from "./MovieDetail";
+import { star } from "ionicons/icons";
 
 interface Props {
   movie: IMovie;
+  handleRelatedSearch: (id: number) => void
 }
 
-export const MovieCard: React.FC<Props> = ({ movie }) => {
+export const MovieCard: React.FC<Props> = ({ movie , handleRelatedSearch}) => {
   const [openModal, setOpenModal] = useState(false);
   const [snippet, setSnippet] = useState(false);
 
@@ -34,7 +39,6 @@ export const MovieCard: React.FC<Props> = ({ movie }) => {
     )}&format=json`;
   };
 
-
   const handleTitleClick = async (movie: IMovie) => {
     const res = await fetch(getWikipediaSearchUrlFor(movie.name), {
       method: "GET",
@@ -43,7 +47,6 @@ export const MovieCard: React.FC<Props> = ({ movie }) => {
     setOpenModal(true);
   };
 
-
   return (
     <>
       <IonCard className="Card">
@@ -51,12 +54,24 @@ export const MovieCard: React.FC<Props> = ({ movie }) => {
         <IonCardHeader>
           <IonItem button onClick={() => handleTitleClick(movie)}>
             <IonLabel>{movie.name}</IonLabel>
+            <IonNote>
+              {new Date(movie.releaseDate).toLocaleDateString()}
+            </IonNote>
           </IonItem>
-          <IonCardSubtitle>
-            {new Date(movie.releaseDate).toLocaleDateString()}
-          </IonCardSubtitle>
+          <IonChip>
+            <IonLabel>{movie.score} / 10</IonLabel>
+            <IonIcon icon={star} />
+          </IonChip>
         </IonCardHeader>
-        <IonCardContent>{movie.overview}</IonCardContent>
+        <IonCardContent>
+          <IonItem>
+            <IonTextarea
+              value={movie.overview}
+              rows={10}
+              
+            ></IonTextarea>
+          </IonItem>
+        </IonCardContent>
       </IonCard>
 
       <MovieDetail
@@ -64,6 +79,7 @@ export const MovieCard: React.FC<Props> = ({ movie }) => {
         openModal={openModal}
         snippet={snippet}
         handleCloseModal={() => setOpenModal(false)}
+        handleRelatedSearch={handleRelatedSearch}
       ></MovieDetail>
     </>
   );

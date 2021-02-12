@@ -19,12 +19,19 @@ export const SearchBox: React.FC<Props> = ({handleChange}) => {
     handleChange(inputText);
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLIonSearchbarElement>) => {
+    if (event.key === 'Enter') {
+      handleButtonClick();
+    }
+  }
+
 
 
   return (
       <>
     <IonSearchbar
       value={inputText}
+      onKeyDown={handleKeyDown}
       placeholder={!inputText ? placeHolderText : ''}
       onIonChange={(e) => handleInputChange(e.detail.value!)}
     ></IonSearchbar>

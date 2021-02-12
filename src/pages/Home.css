@@ -3,3 +3,7 @@
 .CustomModal .modal-wrapper {
   height: 300px;
 }
+
+.ToolBar{
+    max-width: 500px;
+}

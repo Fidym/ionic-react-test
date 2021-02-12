@@ -11,8 +11,9 @@ import {
   IonCol,
   IonGrid,
   IonRow,
+  IonItem,
 } from "@ionic/react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { close, openOutline } from "ionicons/icons";
 import { IMovie } from "../interfaces/movie";
 
@@ -21,6 +22,7 @@ interface Props {
   snippet: any;
   openModal: boolean;
   handleCloseModal: () => void;
+  handleRelatedSearch: (id: number) => void;
 }
 
 export const MovieDetail: React.FC<Props> = ({
@@ -28,29 +30,36 @@ export const MovieDetail: React.FC<Props> = ({
   openModal,
   snippet,
   handleCloseModal,
+  handleRelatedSearch,
 }) => {
   const [wikiLink, setWikiLink] = useState("");
   const [imdbLink, setImdbLink] = useState("");
 
+  async function fetchWikiLink() {
+    return fetch(
+      `https://en.wikipedia.org/w/api.php?origin=*&action=opensearch&search=${encodeURI(
+        movie.name
+      )}`,
+      {
+        method: "Get",
+      }
+    )
+      .then((res) => res.json())
+      .then((res) => (res && res[3] && res[3][0]) || "");
+  }
+
   useEffect(() => {
-    setImdbLink(
+    let isSubscribed = true;
+    isSubscribed && setImdbLink(
       `https://www.imdb.com/search/title/?title=${encodeURI(movie.name)}`
     );
-
-    const getWikiLink = async (): Promise<void> => {
-      const res = await fetch(
-        `https://en.wikipedia.org/w/api.php?origin=*&action=opensearch&search=${encodeURI(
-          movie.name
-        )}`,
-        {
-          method: "Get",
-        }
-      ).then((res) => res.json());
-      setWikiLink((res && res[3] && res[3][0]) || "");
+    fetchWikiLink()
+      .then((link) => isSubscribed ? setWikiLink(link) : "")
+      .catch((error) => isSubscribed ? console.log({error}) : "")
+    return () => {
+      isSubscribed = false;
     };
-
-    getWikiLink();
-  });
+  }, []);
 
   const createMarkup = () => {
     return { __html: snippet || "" };
@@ -72,6 +81,9 @@ export const MovieDetail: React.FC<Props> = ({
           </IonButtons>
         </IonToolbar>
       </IonHeader>
+      <IonItem>
+        <IonLabel>From wikipedia:</IonLabel>
+      </IonItem>
       <IonLabel>
         <div
           className="ion-padding"
@@ -84,7 +96,7 @@ export const MovieDetail: React.FC<Props> = ({
             <IonCol>
               {wikiLink && (
                 <IonButton
-                expand="block"
+                  expand="block"
                   className="LinkButton"
                   href={wikiLink}
                   target="blank"
@@ -97,7 +109,7 @@ export const MovieDetail: React.FC<Props> = ({
             </IonCol>
             <IonCol>
               <IonButton
-              expand="block"
+                expand="block"
                 className="LinkButton"
                 href={imdbLink}
                 target="blank"
@@ -105,6 +117,22 @@ export const MovieDetail: React.FC<Props> = ({
               >
                 IMDB
                 <IonIcon slot="end" icon={openOutline} />
+              </IonButton>
+            </IonCol>
+          </IonRow>
+          <IonRow>
+            <IonCol>
+              <IonButton
+                color="secondary"
+                expand="block"
+                className="LinkButton"
+                onClick={() => {
+                  handleCloseModal();
+                  handleRelatedSearch(parseInt(movie.id));
+                }}
+              >
+                Search related movies
+                <IonIcon slot="search" icon={openOutline} />
               </IonButton>
             </IonCol>
           </IonRow>

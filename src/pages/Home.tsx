@@ -11,11 +11,17 @@ import React, { useState } from "react";
 import { MovieList } from "../components/MovieList";
 
 const Home: React.FC = () => {
-  const [searchText, setSearchText] = useState<string>("");
-
+  const [searchText, setSearchText] = useState<string | null>(null);
+  const [relatedId, setRelatedId] = useState<number | null>(null);
 
   const handleSeachTextChange = (text: string) => {
     setSearchText(text);
+    setRelatedId(null)
+  };
+
+  const searchRelatedMovies = (id: number) => {
+    setSearchText(null)
+    setRelatedId(id)
   };
 
   return (
@@ -24,14 +30,16 @@ const Home: React.FC = () => {
         <IonToolbar>
           <IonTitle> Movie search app</IonTitle>
         </IonToolbar>
-        <IonToolbar>
-          <SearchBox
-            handleChange={handleSeachTextChange}
-          ></SearchBox>
+        <IonToolbar className="ToolBar">
+          <SearchBox handleChange={handleSeachTextChange}></SearchBox>
         </IonToolbar>
       </IonHeader>
-      <IonContent fullscreen>
-        <MovieList searchText={searchText}></MovieList>
+      <IonContent>
+        <MovieList
+          searchText={searchText}
+          relatedId={relatedId}
+          handleRelatedSearch={searchRelatedMovies}
+        ></MovieList>
       </IonContent>
     </IonPage>
   );

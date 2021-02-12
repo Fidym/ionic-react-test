@@ -9,3 +9,10 @@
   height: 50px;
   width: 200px;
 }
+
+
+.CenterCol{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
