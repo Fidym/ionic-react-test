@@ -1,9 +1,8 @@
-import { gql, useLazyQuery, useQuery } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import { IonGrid, IonRow, IonCol, IonCard, IonSpinner } from "@ionic/react";
-import React, { useState } from "react";
+import React from "react";
 import { IMovie, IRecommendedMovies } from "../interfaces/movie";
 import { MovieCard } from "./MovieCard";
-import { MovieDetail } from "./MovieDetail";
 import "./MovieList.css";
 
 interface Props {
@@ -88,11 +87,11 @@ export const MovieList: React.FC<Props> = ({ searchText, relatedId, handleRelate
         <IonSpinner className="CenteredAlert" name="circles" />
       ) : (searchText || relatedId) ? (
         <IonCard className="NoMovieFound CenteredAlert">
-          No movies found !
+          No movies found 😥
         </IonCard>
       ) : (
         <IonCard className="NoMovieFound CenteredAlert">
-          Type in a movie title !
+          Search for a movie title 🔎
         </IonCard>
       )}
     </>

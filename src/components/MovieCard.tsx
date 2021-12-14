@@ -1,19 +1,11 @@
 import {
   IonCard,
   IonCardHeader,
-  IonCardSubtitle,
-  IonCardTitle,
   IonCardContent,
   IonImg,
   IonItem,
   IonLabel,
-  IonModal,
-  IonButton,
-  IonToolbar,
-  IonHeader,
-  IonTitle,
   IonIcon,
-  IonButtons,
   IonChip,
   IonNote,
   IonTextarea,
@@ -26,25 +18,50 @@ import { star } from "ionicons/icons";
 
 interface Props {
   movie: IMovie;
-  handleRelatedSearch: (id: number) => void
+  handleRelatedSearch: (id: number) => void;
 }
 
-export const MovieCard: React.FC<Props> = ({ movie , handleRelatedSearch}) => {
+export const MovieCard: React.FC<Props> = ({ movie, handleRelatedSearch }) => {
   const [openModal, setOpenModal] = useState(false);
   const [snippet, setSnippet] = useState(false);
 
   const getWikipediaSearchUrlFor = (text: string) => {
-    return `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURI(
-      text
-    )}&format=json`;
+    const wikiFetchConfig = {
+      action: "query",
+      format: "json",
+      origin: "*",
+      list: "search",
+      srlimit: 1,
+      srsearch: text,
+      srnamespace: 0,
+      srprop: "snippet",
+    };
+    const queryString = Object.keys(wikiFetchConfig)
+      .map(
+        (k) =>
+          encodeURIComponent(k) +
+          "=" +
+          encodeURIComponent((wikiFetchConfig as any)[k])
+      )
+      .join("&");
+
+    return `https://en.wikipedia.org/w/api.php?${queryString}`;
   };
 
   const handleTitleClick = async (movie: IMovie) => {
-    const res = await fetch(getWikipediaSearchUrlFor(movie.name), {
-      method: "GET",
-    }).then((res) => res.json());
-    setSnippet(res.query.search[0].snippet);
-    setOpenModal(true);
+    try {
+      const responseJson = await fetch(getWikipediaSearchUrlFor(movie.name), {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      }).then((res) => res.json());
+      setSnippet(responseJson.query.search[0].snippet);
+      setOpenModal(true);
+    } catch (error) {
+      console.log({ error });
+    }
   };
 
   return (
@@ -69,7 +86,6 @@ export const MovieCard: React.FC<Props> = ({ movie , handleRelatedSearch}) => {
               readonly
               value={movie.overview}
               rows={10}
-              
             ></IonTextarea>
           </IonItem>
         </IonCardContent>
